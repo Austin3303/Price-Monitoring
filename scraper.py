@@ -37,10 +37,10 @@ def scrape_js(url, selector):
         browser = p.chromium.launch()
         page = browser.new_page()
         page.goto(url, wait_until="networkidle")
-        page.wait_for_selector(selector, timeout=15000)
-        text = page.locator(selector).first.inner_text()
+        # Print all text on page to find price
+        print(page.content()[:5000])
         browser.close()
-        return text
+        return "0"
 
 for item in ITEMS:
     try:
