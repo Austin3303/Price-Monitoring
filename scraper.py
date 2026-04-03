@@ -55,8 +55,11 @@ def scrape_js(url, selector):
         return text
 
 def scrape_api(url):
-    res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
-    print(res.text[:500])
+    res = requests.get(url, headers={
+        "User-Agent": "Mozilla/5.0",
+        "x-fr-clientid": "uqsp-th"
+    })
+    print(res.text[:300])
     data = res.json()
     price = data["result"]["l2s"][0]["prices"]["base"]["value"]["amount"]
     return str(price)
