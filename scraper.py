@@ -41,7 +41,7 @@ def scrape_static(url, selector):
 def scrape_cloudflare(url, selector):
     session = cf_requests.Session()
     res = session.get(url, impersonate="chrome")
-    cookies = {c.name: c.value for c in session.cookies}
+    cookies = dict(session.cookies)
     
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -53,7 +53,7 @@ def scrape_cloudflare(url, selector):
         } for k, v in cookies.items()])
         page = context.new_page()
         page.goto(url, wait_until="networkidle", timeout=30000)
-        print(page.content()[3000:6000])  # print middle section of HTML
+        print(page.content()[3000:6000])
         browser.close()
         return "0"
 
