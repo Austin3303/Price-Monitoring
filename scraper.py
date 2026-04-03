@@ -33,7 +33,8 @@ def scrape_static(url, selector):
 def scrape_js(url, selector):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page()
+        context = browser.new_context(locale="th-TH")
+        page = context.new_page()
         page.goto(url, wait_until="networkidle")
         page.wait_for_selector(selector, timeout=15000)
         text = page.locator(selector).first.inner_text()
