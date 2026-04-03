@@ -17,20 +17,21 @@
   <h2>📦 Price Monitor</h2>
   <select id="monthPicker"></select>
   <div class="grid" id="grid"></div>
-
   <script>
     let allData = {};
     const charts = {};
+
+    const units = {
+      "NB 9060": "THB",
+      "GW Gentle Pace Cap": "USD"
+    };
 
     fetch("data.json?v=" + Date.now())
       .then(r => r.json())
       .then(data => {
         allData = data;
-
-        // Populate months from first item
         const items = Object.keys(data);
-        if (items.length === 0) return; // no data yet
-
+        if (items.length === 0) return;
         const firstItem = Object.values(data)[0];
         const months = [...new Set(firstItem.map(d => d.timestamp.slice(0, 7)))].sort();
         const picker = document.getElementById("monthPicker");
@@ -40,8 +41,6 @@
           picker.appendChild(opt);
         });
         picker.value = months[months.length - 1];
-
-        // Create cards
         const grid = document.getElementById("grid");
         Object.keys(data).forEach(name => {
           const card = document.createElement("div");
@@ -49,7 +48,6 @@
           card.innerHTML = `<h3>${name}</h3><canvas id="chart-${name}"></canvas>`;
           grid.appendChild(card);
         });
-
         renderAll(picker.value);
         picker.addEventListener("change", e => renderAll(e.target.value));
       });
@@ -66,7 +64,6 @@
         if (!daily[day]) daily[day] = [];
         daily[day].push(d.price);
       });
-
       const daysInMonth = new Date(month.slice(0,4), month.slice(5,7), 0).getDate();
       const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
       const prices = labels.map(d => {
@@ -74,20 +71,20 @@
         const arr = daily[d];
         return Math.round(arr.reduce((a,b) => a+b) / arr.length);
       });
-
+      const unit = units[item] || "THB";
       if (charts[item]) charts[item].destroy();
       charts[item] = new Chart(document.getElementById("chart-" + item), {
         type: "bar",
         data: {
           labels,
-          datasets: [{ label: "THB", data: prices, backgroundColor: "#4e79a7" }]
+          datasets: [{ label: unit, data: prices, backgroundColor: "#4e79a7" }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          plugins: { legend: { display: true } },
           scales: {
             x: { ticks: { font: { size: 9 } } },
-            y: { title: { display: true, text: "Price" } }
+            y: { title: { display: true, text: unit } }
           }
         }
       });
