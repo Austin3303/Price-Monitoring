@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Start FlareSolverr
+        run: |
+          pip install flaresolverr
+          docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest
+          sleep 10
 
       - name: Install Tor
         run: |
