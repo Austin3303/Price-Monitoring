@@ -54,11 +54,20 @@ def scrape_js(url, selector):
         browser.close()
         return text
 
+def scrape_api(url):
+    res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    data = res.json()
+    price = data["result"]["l2s"][0]["prices"]["base"]["value"]["amount"]
+    return str(price)
+
 for item in ITEMS:
     try:
         if item["mode"] == "js":
             price_text = scrape_js(item["url"], item["selector"])
+        elif item["mode"] == "api":
+            price_text = scrape_api(item["url"])
         else:
+            price_text = scrape_static(item["url"], item["selector"])
             price_text = scrape_static(item["url"], item["selector"])
         price = float(re.sub(r'[^\d.]', '', price_text).strip())
         name = item["name"]
