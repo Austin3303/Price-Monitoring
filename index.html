@@ -5,73 +5,90 @@
   <title>Price Monitor</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    select { margin: 20px 0; padding: 8px; font-size: 16px; }
+    body { font-family: sans-serif; max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+    h2 { margin-bottom: 10px; }
+    select { margin-bottom: 20px; padding: 8px; font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+    .card h3 { margin: 0 0 8px; font-size: 14px; }
   </style>
 </head>
 <body>
   <h2>📦 Price Monitor</h2>
-  <select id="monthPicker"><option value="">-- Select Month --</option></select>
-  <canvas id="chart"></canvas>
+  <select id="monthPicker"></select>
+  <div class="grid" id="grid"></div>
 
   <script>
-  let allData = [];
+    let allData = {};
+    const charts = {};
 
-  fetch("data.json?v=" + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      allData = data;
+    fetch("data.json?v=" + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        allData = data;
 
-      const months = [...new Set(data.map(d => d.timestamp.slice(0, 7)))].sort();
-      const picker = document.getElementById("monthPicker");
-      months.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m;
-        opt.textContent = m;
-        picker.appendChild(opt);
+        // Populate months from first item
+        const firstItem = Object.values(data)[0];
+        const months = [...new Set(firstItem.map(d => d.timestamp.slice(0, 7)))].sort();
+        const picker = document.getElementById("monthPicker");
+        months.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m; opt.textContent = m;
+          picker.appendChild(opt);
+        });
+        picker.value = months[months.length - 1];
+
+        // Create cards
+        const grid = document.getElementById("grid");
+        Object.keys(data).forEach(name => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `<h3>${name}</h3><canvas id="chart-${name}"></canvas>`;
+          grid.appendChild(card);
+        });
+
+        renderAll(picker.value);
+        picker.addEventListener("change", e => renderAll(e.target.value));
       });
 
-      picker.value = months[months.length - 1];
-      renderChart(picker.value);
+    function renderAll(month) {
+      Object.keys(allData).forEach(name => renderChart(name, month));
+    }
 
-      picker.addEventListener("change", e => renderChart(e.target.value));
-    });
+    function renderChart(item, month) {
+      const filtered = allData[item].filter(d => d.timestamp.startsWith(month));
+      const daily = {};
+      filtered.forEach(d => {
+        const day = parseInt(d.timestamp.slice(8, 10));
+        if (!daily[day]) daily[day] = [];
+        daily[day].push(d.price);
+      });
 
-  let chart;
-  function renderChart(month) {
-    const filtered = allData.filter(d => d.timestamp.startsWith(month));
+      const daysInMonth = new Date(month.slice(0,4), month.slice(5,7), 0).getDate();
+      const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+      const prices = labels.map(d => {
+        if (!daily[d]) return null;
+        const arr = daily[d];
+        return Math.round(arr.reduce((a,b) => a+b) / arr.length);
+      });
 
-    const daily = {};
-    filtered.forEach(d => {
-      const day = parseInt(d.timestamp.slice(8, 10));
-      if (!daily[day]) daily[day] = [];
-      daily[day].push(d.price);
-    });
-
-    const daysInMonth = new Date(month.slice(0,4), month.slice(5,7), 0).getDate();
-    const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
-    const prices = labels.map(d => {
-      if (!daily[d]) return null;
-      const arr = daily[d];
-      return Math.round(arr.reduce((a,b) => a+b) / arr.length);
-    });
-
-    if (chart) chart.destroy();
-    chart = new Chart(document.getElementById("chart"), {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { title: { display: true, text: "Day" } },
-          y: { min: 1000, max: 10000, title: { display: true, text: "Price (THB)" } }
+      if (charts[item]) charts[item].destroy();
+      charts[item] = new Chart(document.getElementById("chart-" + item), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{ label: "THB", data: prices, backgroundColor: "#4e79a7" }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } } },
+            y: { min: 1000, max: 10000, ticks: { font: { size: 9 } } }
+          }
         }
-      }
-    });
-  }
-</script>
+      });
+    }
+  </script>
 </body>
 </html>
