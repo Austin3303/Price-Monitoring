@@ -1,26 +1,41 @@
-fetch("data.json")  // instead of Google Sheets URL
-  .then(r => r.json())
-  .then(data => {
-    // group by month for bar chart
-    const monthly = {};
-    data.forEach(d => {
-      const month = d.timestamp.slice(0, 7); // "2025-04"
-      if (!monthly[month]) monthly[month] = [];
-      monthly[month].push(d.price);
-    });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Price Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+  </style>
+</head>
+<body>
+  <h2>📦 Price Monitor (Last 12 Months)</h2>
+  <canvas id="chart"></canvas>
 
-    const labels = Object.keys(monthly).sort();
-    const prices = labels.map(m => {
-      const arr = monthly[m];
-      return Math.round(arr.reduce((a,b) => a+b) / arr.length); // avg per month
-    });
-
-    new Chart(document.getElementById("chart"), {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
-      },
-      options: { responsive: true, scales: { y: { beginAtZero: false } } }
-    });
-  });
+  <script>
+    fetch("data.json")
+      .then(r => r.json())
+      .then(data => {
+        const monthly = {};
+        data.forEach(d => {
+          const month = d.timestamp.slice(0, 7);
+          if (!monthly[month]) monthly[month] = [];
+          monthly[month].push(d.price);
+        });
+        const labels = Object.keys(monthly).sort();
+        const prices = labels.map(m => {
+          const arr = monthly[m];
+          return Math.round(arr.reduce((a,b) => a+b) / arr.length);
+        });
+        new Chart(document.getElementById("chart"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: false } } }
+        });
+      });
+  </script>
+</body>
+</html>
