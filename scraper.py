@@ -43,14 +43,8 @@ def scrape_cloudflare(url, selector):
         "http": "socks5://127.0.0.1:9050",
         "https": "socks5://127.0.0.1:9050"
     }
-    res = cf_requests.get(url, impersonate="chrome", proxies=proxies)
+    res = cf_requests.get(url, impersonate="chrome", proxies=proxies, timeout=60)
     print(res.text[2000:5000])
-    soup = BeautifulSoup(res.text, "html.parser")
-    el = soup.select_one(selector)
-    if not el: raise Exception("Selector not found")
-    return el.text.strip()
-    
-    res = cf_requests.get(url, impersonate="chrome", proxies=proxies)
     soup = BeautifulSoup(res.text, "html.parser")
     el = soup.select_one(selector)
     if not el: raise Exception("Selector not found")
