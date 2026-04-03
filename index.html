@@ -1,46 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Price Monitor</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    canvas { margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <h2>📦 Price Monitor (Last 12 Months)</h2>
-  <canvas id="chart"></canvas>
+fetch("data.json")  // instead of Google Sheets URL
+  .then(r => r.json())
+  .then(data => {
+    // group by month for bar chart
+    const monthly = {};
+    data.forEach(d => {
+      const month = d.timestamp.slice(0, 7); // "2025-04"
+      if (!monthly[month]) monthly[month] = [];
+      monthly[month].push(d.price);
+    });
 
-  <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxEKexX7fflFRia__ZkGgBsb6pHTwGRiOBiShKWI-0JQtpABTXIEpvyq7TSv_KawlGw/execE";
+    const labels = Object.keys(monthly).sort();
+    const prices = labels.map(m => {
+      const arr = monthly[m];
+      return Math.round(arr.reduce((a,b) => a+b) / arr.length); // avg per month
+    });
 
-    const COLORS = ["#4e79a7","#f28e2b","#e15759","#76b7b2","#59a14f"];
-
-    fetch(SHEET_URL)
-      .then(r => r.json())
-      .then(data => {
-        const labels = data.map(r => r.Month);
-        const items = Object.keys(data[0]).filter(k => k !== "Month");
-
-        new Chart(document.getElementById("chart"), {
-          type: "bar",
-          data: {
-            labels,
-            datasets: items.map((item, i) => ({
-              label: item,
-              data: data.map(r => r[item]),
-              backgroundColor: COLORS[i % COLORS.length],
-            }))
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { position: "top" } },
-            scales: { y: { beginAtZero: false } }
-          }
-        });
-      });
-  </script>
-</body>
-</html>
+    new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: false } } }
+    });
+  });
