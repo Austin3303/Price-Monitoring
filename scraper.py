@@ -51,7 +51,7 @@ for item in ITEMS:
             price_text = scrape_js(item["url"], item["selector"])
         else:
             price_text = scrape_static(item["url"], item["selector"])
-        price = float(price_text.replace("฿", "").replace(",", "").replace("THB", "").strip())
+        price = float(re.sub(r'[^\d.]', '', price_text).strip())
         name = item["name"]
         if name not in data:
             data[name] = []
