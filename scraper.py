@@ -13,7 +13,7 @@ ITEMS = [
     {
         "name": "GW Gentle Pace Cap",
         "url": "https://www.gentlewomanonline.com/product/1103913",
-        "selector": ".w-fit.pr-3.text-center.font-medium span"
+        "selector": ".w-fit.pr-3.text-center.font-medium span",
         "js": True
     }
 ]
