@@ -39,13 +39,13 @@ def scrape_static(url, selector):
     return el.text.strip()
 
 def scrape_cloudflare(url, selector):
-    proxies = {
-        "http": "socks5://127.0.0.1:9050",
-        "https": "socks5://127.0.0.1:9050"
-    }
-    res = cf_requests.get(url, impersonate="chrome", proxies=proxies, timeout=60)
-    print(res.text[2000:5000])
-    soup = BeautifulSoup(res.text, "html.parser")
+    res = requests.post("http://localhost:8191/v1", json={
+        "cmd": "request.get",
+        "url": url,
+        "maxTimeout": 60000
+    })
+    html = res.json()["solution"]["response"]
+    soup = BeautifulSoup(html, "html.parser")
     el = soup.select_one(selector)
     if not el: raise Exception("Selector not found")
     return el.text.strip()
