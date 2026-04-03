@@ -15,12 +15,63 @@
   <canvas id="chart"></canvas>
 
   <script>
+  let allData = [];
+
   fetch("data.json?v=" + Date.now())
-  .then(r => r.json())
-  .then(data => {
-    alert(JSON.stringify(data));
-  })
-  .catch(err => alert("Error: " + err));
-  </script>
+    .then(r => r.json())
+    .then(data => {
+      allData = data;
+
+      const months = [...new Set(data.map(d => d.timestamp.slice(0, 7)))].sort();
+      const picker = document.getElementById("monthPicker");
+      months.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m;
+        picker.appendChild(opt);
+      });
+
+      picker.value = months[months.length - 1];
+      renderChart(picker.value);
+
+      picker.addEventListener("change", e => renderChart(e.target.value));
+    });
+
+  let chart;
+  function renderChart(month) {
+    const filtered = allData.filter(d => d.timestamp.startsWith(month));
+
+    const daily = {};
+    filtered.forEach(d => {
+      const day = parseInt(d.timestamp.slice(8, 10));
+      if (!daily[day]) daily[day] = [];
+      daily[day].push(d.price);
+    });
+
+    const daysInMonth = new Date(month.slice(0,4), month.slice(5,7), 0).getDate();
+    const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+    const prices = labels.map(d => {
+      if (!daily[d]) return null;
+      const arr = daily[d];
+      return Math.round(arr.reduce((a,b) => a+b) / arr.length);
+    });
+
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { title: { display: true, text: "Day" } },
+          y: { min: 1000, max: 10000, title: { display: true, text: "Price (THB)" } }
+        }
+      }
+    });
+  }
+</script>
 </body>
 </html>
