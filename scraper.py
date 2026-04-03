@@ -18,6 +18,13 @@ ITEMS = [
         "selector": ".w-fit.pr-3.text-center.font-medium span",
         "mode": "js"
     },
+
+    {
+    "name": "Uniqlo E471809",
+    "url": "https://www.uniqlo.com/th/api/commerce/v5/th/products/E471809-000/price-groups/00/l2s?withPrices=true",
+    "selector": None,
+    "mode": "api"
+    },
 ]
 
 data = {}
