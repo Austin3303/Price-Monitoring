@@ -14,7 +14,7 @@ ITEMS = [
     {
         "name": "EMIS Small Logo Cap",
         "url": "https://www.central.co.th/th/emis-unisex-ball-cap-small-logo-grcds2512150002?sku=CDS26607344",
-        "selector": ".text-base.text-central-red",
+        "selector": "[class*='central-red']",
         "js": True
     },
 ]
