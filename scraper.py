@@ -39,11 +39,23 @@ def scrape_static(url, selector):
     return el.text.strip()
 
 def scrape_cloudflare(url, selector):
-    res = cf_requests.get(url, impersonate="chrome")
-    soup = BeautifulSoup(res.text, "html.parser")
-    el = soup.select_one(selector)
-    if not el: raise Exception("Selector not found")
-    return el.text.strip()
+    session = cf_requests.Session()
+    res = session.get(url, impersonate="chrome")
+    cookies = {c.name: c.value for c in session.cookies}
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context(locale="th-TH")
+        context.add_cookies([{
+            "name": k, "value": v,
+            "domain": ".central.co.th",
+            "path": "/"
+        } for k, v in cookies.items()])
+        page = context.new_page()
+        page.goto(url, wait_until="networkidle", timeout=30000)
+        print(page.content()[3000:6000])  # print middle section of HTML
+        browser.close()
+        return "0"
 
 def scrape_js(url, selector):
     with sync_playwright() as p:
