@@ -1,0 +1,26 @@
+fetch("data.json")  // instead of Google Sheets URL
+  .then(r => r.json())
+  .then(data => {
+    // group by month for bar chart
+    const monthly = {};
+    data.forEach(d => {
+      const month = d.timestamp.slice(0, 7); // "2025-04"
+      if (!monthly[month]) monthly[month] = [];
+      monthly[month].push(d.price);
+    });
+
+    const labels = Object.keys(monthly).sort();
+    const prices = labels.map(m => {
+      const arr = monthly[m];
+      return Math.round(arr.reduce((a,b) => a+b) / arr.length); // avg per month
+    });
+
+    new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: false } } }
+    });
+  });
