@@ -16,7 +16,8 @@ jobs:
 
       - name: Scrape price
         run: |
-          pip install requests beautifulsoup4
+          pip install requests beautifulsoup4 playwright
+          playwright install chromium
           python scraper.py
 
       - name: Commit data
