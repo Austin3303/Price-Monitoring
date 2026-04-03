@@ -12,10 +12,10 @@ ITEMS = [
         "js": False
     },
     {
-        "name": "EMIS Small Logo Cap",
-        "url": "https://www.central.co.th/th/emis-unisex-ball-cap-small-logo-grcds2512150002?sku=CDS26607344",
-        "selector": "[class*='central-red']",
-        "js": True
+    "name": "GW Gentle Pace Cap",
+    "url": "https://www.gentlewomanonline.com/product/1103913",
+    "selector": ".product-price",
+    "js": False
     },
 ]
 
