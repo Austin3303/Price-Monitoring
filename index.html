@@ -15,14 +15,12 @@
   <canvas id="chart"></canvas>
 
   <script>
-    <script>
   fetch("data.json?v=" + Date.now())
   .then(r => r.json())
   .then(data => {
     alert(JSON.stringify(data));
   })
   .catch(err => alert("Error: " + err));
-</script>
   </script>
 </body>
 </html>
