@@ -1,10 +1,9 @@
 name: Scrape Price
-
 on:
   schedule:
     - cron: '0 1 * * *'   # 8:00 AM Bangkok
     - cron: '0 13 * * *'  # 8:00 PM Bangkok
-  workflow_dispatch:       # manual trigger
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -13,18 +12,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Start FlareSolverr
-        run: |
-          pip install flaresolverr
-          docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest
-          sleep 10
-
-      - name: Install Tor
-        run: |
-          sudo apt-get install -y tor
-          sudo service tor start
-          sleep 5
 
       - name: Scrape price
         run: |
