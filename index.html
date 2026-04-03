@@ -28,6 +28,9 @@
         allData = data;
 
         // Populate months from first item
+        const items = Object.keys(data);
+        if (items.length === 0) return; // no data yet
+
         const firstItem = Object.values(data)[0];
         const months = [...new Set(firstItem.map(d => d.timestamp.slice(0, 7)))].sort();
         const picker = document.getElementById("monthPicker");
