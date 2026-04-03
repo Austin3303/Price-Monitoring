@@ -6,36 +6,79 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    select { margin: 20px 0; padding: 8px; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h2>📦 Price Monitor (Last 12 Months)</h2>
+  <h2>📦 Price Monitor</h2>
+  <select id="monthPicker"></select>
   <canvas id="chart"></canvas>
 
   <script>
+    let allData = [];
+
     fetch("data.json")
       .then(r => r.json())
       .then(data => {
-        const monthly = {};
-        data.forEach(d => {
-          const month = d.timestamp.slice(0, 7);
-          if (!monthly[month]) monthly[month] = [];
-          monthly[month].push(d.price);
+        allData = data;
+
+        // Get unique months
+        const months = [...new Set(data.map(d => d.timestamp.slice(0, 7)))].sort();
+        const picker = document.getElementById("monthPicker");
+        months.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.textContent = m;
+          picker.appendChild(opt);
         });
-        const labels = Object.keys(monthly).sort();
-        const prices = labels.map(m => {
-          const arr = monthly[m];
-          return Math.round(arr.reduce((a,b) => a+b) / arr.length);
-        });
-        new Chart(document.getElementById("chart"), {
-          type: "bar",
-          data: {
-            labels,
-            datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
-          },
-          options: { responsive: true, scales: { y: { beginAtZero: false } } }
-        });
+
+        // Default to latest month
+        picker.value = months[months.length - 1];
+        renderChart(picker.value);
+
+        picker.addEventListener("change", e => renderChart(e.target.value));
       });
+
+    let chart;
+    function renderChart(month) {
+      const filtered = allData.filter(d => d.timestamp.startsWith(month));
+
+      // Group by day, avg if 2 entries/day
+      const daily = {};
+      filtered.forEach(d => {
+        const day = parseInt(d.timestamp.slice(8, 10));
+        if (!daily[day]) daily[day] = [];
+        daily[day].push(d.price);
+      });
+
+      const daysInMonth = new Date(month.slice(0,4), month.slice(5,7), 0).getDate();
+      const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+      const prices = labels.map(d => {
+        if (!daily[d]) return null;
+        const arr = daily[d];
+        return Math.round(arr.reduce((a,b) => a+b) / arr.length);
+      });
+
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById("chart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{ label: "NB 9060 (THB)", data: prices, backgroundColor: "#4e79a7" }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: "Day" } },
+            y: {
+              min: 1000,
+              max: 10000,
+              title: { display: true, text: "Price (THB)" }
+            }
+          }
+        }
+      });
+    }
   </script>
 </body>
 </html>
