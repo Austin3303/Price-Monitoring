@@ -16,7 +16,7 @@ jobs:
 
       - name: Scrape price
         run: |
-          pip install requests beautifulsoup4 playwright
+          pip install requests beautifulsoup4 playwright curl_cffi
           playwright install chromium
           python scraper.py
 
