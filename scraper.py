@@ -21,9 +21,9 @@ ITEMS = [
 
     {
     "name": "Uniqlo E471809",
-    "url": "https://www.uniqlo.com/th/api/commerce/v5/th/products/E471809-000/price-groups/00/l2s?withPrices=true",
-    "selector": None,
-    "mode": "api"
+    "url": "https://www.uniqlo.com/th/th/products/E471809-000?colorCode=COL31&sizeCode=SMA003",
+    "selector": ".fr-price-currency-order-change span",
+    "mode": "js"
     },
 ]
 
@@ -54,22 +54,12 @@ def scrape_js(url, selector):
         browser.close()
         return text
 
-def scrape_api(url):
-    res = requests.get(url, headers={
-        "User-Agent": "Mozilla/5.0",
-        "x-fr-clientid": "uqsp-th"
-    })
-    print(res.text[:300])
-    data = res.json()
-    price = data["result"]["l2s"][0]["prices"]["base"]["value"]["amount"]
-    return str(price)
+
 
 for item in ITEMS:
     try:
         if item["mode"] == "js":
             price_text = scrape_js(item["url"], item["selector"])
-        elif item["mode"] == "api":
-            price_text = scrape_api(item["url"])
         else:
             price_text = scrape_static(item["url"], item["selector"])
             price_text = scrape_static(item["url"], item["selector"])
