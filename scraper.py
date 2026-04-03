@@ -48,8 +48,8 @@ def scrape_js(url, selector):
             permissions=["geolocation"]
         )
         page = context.new_page()
-        page.goto(url, wait_until="networkidle")
-        page.wait_for_selector(selector, timeout=15000)
+        page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_selector(selector, timeout=20000)
         text = page.locator(selector).first.inner_text()
         browser.close()
         return text
