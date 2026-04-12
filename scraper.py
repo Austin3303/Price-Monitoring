@@ -5,6 +5,12 @@ from playwright.sync_api import sync_playwright
 import requests
 from bs4 import BeautifulSoup
 
+res = requests.get(
+    "https://api.line.me/v2/profile",
+    headers={"Authorization": f"Bearer {os.environ.get('LINE_TOKEN')}"}
+)
+print(res.json())
+
 ITEMS = [
     {
         "name": "NB 9060",
