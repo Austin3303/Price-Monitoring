@@ -48,7 +48,7 @@ ITEMS = [
     },
 
     {
-        "name": "Uniqlo E487771",
+        "name": "Balloon Gathered Camisole",
         "url": "https://www.uniqlo.com/th/en/products/E487771-000?colorCode=COL16&sizeCode=SMA002",
         "selector": ".fr-price-currency-order-change span",
         "mode": "js"
