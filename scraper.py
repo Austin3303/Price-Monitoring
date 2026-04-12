@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 res = requests.get(
     "https://api.line.me/v2/profile",
-    headers={"Authorization": f"Bearer {os.environ.get('LINE_TOKEN')}"}
+    headers={"Authorization": f"Bearer {os.environ.get('b4425a172759ffa0e78665ffe9659c72')}"}
 )
 print(res.json())
 
