@@ -27,6 +27,20 @@ ITEMS = [
     },
 
     {
+        "name": "GW Nami Bikini Top",
+        "url": "https://www.gentlewomanonline.com/product/1104015",
+        "selector": ".w-fit.pr-3.text-center.font-medium span",
+        "mode": "js"
+    },
+    
+    {
+        "name": "GW Nami Bikini Bottom",
+        "url": "https://www.gentlewomanonline.com/product/1104013",
+        "selector": ".w-fit.pr-3.text-center.font-medium span",
+        "mode": "js"
+    },
+
+    {
     "name": "Uniqlo E471809",
     "url": "https://www.uniqlo.com/th/th/products/E471809-000?colorCode=COL31&sizeCode=SMA003",
     "selector": ".fr-price-currency-order-change span",
