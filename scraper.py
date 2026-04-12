@@ -20,7 +20,7 @@ ITEMS = [
     },
 
     {
-    "name": "GW Cap 1103745",
+    "name": "Salt Cassette Top",
     "url": "https://www.gentlewomanonline.com/product/1103745",
     "selector": ".w-fit.pr-3.text-center.font-medium span",
     "mode": "js"
