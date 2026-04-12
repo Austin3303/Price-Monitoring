@@ -20,6 +20,13 @@ ITEMS = [
     },
 
     {
+    "name": "GW Cap 1103745",
+    "url": "https://www.gentlewomanonline.com/product/1103745",
+    "selector": ".w-fit.pr-3.text-center.font-medium span",
+    "mode": "js"
+    },
+
+    {
     "name": "Uniqlo E471809",
     "url": "https://www.uniqlo.com/th/th/products/E471809-000?colorCode=COL31&sizeCode=SMA003",
     "selector": ".fr-price-currency-order-change span",
