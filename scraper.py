@@ -46,6 +46,13 @@ ITEMS = [
     "selector": ".fr-price-currency-order-change span",
     "mode": "js"
     },
+
+    {
+        "name": "Uniqlo E487771",
+        "url": "https://www.uniqlo.com/th/en/products/E487771-000?colorCode=COL16&sizeCode=SMA002",
+        "selector": ".fr-price-currency-order-change span",
+        "mode": "js"
+    },
 ]
 
 data = {}
