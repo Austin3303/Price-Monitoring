@@ -1,6 +1,5 @@
 import json, os, re
 from datetime import datetime
-from curl_cffi import requests as cf_requests
 from playwright.sync_api import sync_playwright
 import requests
 from bs4 import BeautifulSoup
@@ -12,26 +11,23 @@ ITEMS = [
         "selector": ".special-price .price",
         "mode": "static"
     },
-    
     {
         "name": "GW Gentle Pace Cap",
         "url": "https://www.gentlewomanonline.com/product/1103913",
         "selector": ".w-fit.pr-3.text-center.font-medium span",
         "mode": "js"
     },
-
     {
-    "name": "GW Cap 1103745",
-    "url": "https://www.gentlewomanonline.com/product/1103745",
-    "selector": ".w-fit.pr-3.text-center.font-medium span",
-    "mode": "js"
+        "name": "GW Cap 1103745",
+        "url": "https://www.gentlewomanonline.com/product/1103745",
+        "selector": ".w-fit.pr-3.text-center.font-medium span",
+        "mode": "js"
     },
-    
     {
-        "name": "EMIS Small Logo Cap",
-        "url": "https://www.central.co.th/th/emis-unisex-ball-cap-small-logo-grcds2512150002?sku=CDS26607344",
-        "selector": ".text-base.text-central-red",
-        "mode": "cloudflare"
+        "name": "Uniqlo E471809",
+        "url": "https://www.uniqlo.com/th/th/products/E471809-000?colorCode=COL31&sizeCode=SMA003",
+        "selector": ".fr-price-currency-order-change span",
+        "mode": "js"
     },
 ]
 
@@ -47,13 +43,6 @@ def scrape_static(url, selector):
     if not el: raise Exception("Selector not found")
     return el.text.strip()
 
-def scrape_cloudflare(url, selector):
-    res = cf_requests.get(url, impersonate="chrome")
-    soup = BeautifulSoup(res.text, "html.parser")
-    el = soup.select_one(selector)
-    if not el: raise Exception("Selector not found")
-    return el.text.strip()
-
 def scrape_js(url, selector):
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -63,8 +52,8 @@ def scrape_js(url, selector):
             permissions=["geolocation"]
         )
         page = context.new_page()
-        page.goto(url, wait_until="networkidle")
-        page.wait_for_selector(selector, timeout=15000)
+        page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_selector(selector, timeout=20000)
         text = page.locator(selector).first.inner_text()
         browser.close()
         return text
@@ -73,11 +62,8 @@ for item in ITEMS:
     try:
         if item["mode"] == "js":
             price_text = scrape_js(item["url"], item["selector"])
-        elif item["mode"] == "cloudflare":
-            price_text = scrape_cloudflare(item["url"], item["selector"])
         else:
             price_text = scrape_static(item["url"], item["selector"])
-
         price = float(re.sub(r'[^\d.]', '', price_text).strip())
         name = item["name"]
         if name not in data:
