@@ -12,12 +12,21 @@ ITEMS = [
         "selector": ".special-price .price",
         "mode": "static"
     },
+    
     {
         "name": "GW Gentle Pace Cap",
         "url": "https://www.gentlewomanonline.com/product/1103913",
         "selector": ".w-fit.pr-3.text-center.font-medium span",
         "mode": "js"
     },
+
+    {
+    "name": "GW Cap 1103745",
+    "url": "https://www.gentlewomanonline.com/product/1103745",
+    "selector": ".w-fit.pr-3.text-center.font-medium span",
+    "mode": "js"
+    },
+    
     {
         "name": "EMIS Small Logo Cap",
         "url": "https://www.central.co.th/th/emis-unisex-ball-cap-small-logo-grcds2512150002?sku=CDS26607344",
